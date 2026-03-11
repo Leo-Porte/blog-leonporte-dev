@@ -3,78 +3,81 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
 
-const posts = (await getCollection('posts', ({ data }) => !data.draft))
+const allPosts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const [featured, ...rest] = allPosts;
 ---
 
 <BaseLayout
   title="Leon Porte"
   description="Blog pessoal sobre tecnologia, desenvolvimento de software e aprendizados do dia a dia."
 >
-  <section class="mb-14">
-    <div class="animate-fade-up">
-      <div class="inline-flex items-center gap-2 text-sm font-medium text-primary bg-primary/8 border border-primary/15 px-3 py-1 rounded-full mb-5">
-        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-        Compartilhando conhecimento
+  <!-- Hero / About -->
+  <section class="pb-10 mb-2 animate-fade-up">
+    <p class="text-xs uppercase tracking-[0.2em] text-text-light font-semibold mb-6">Sobre</p>
+    <div class="flex flex-col sm:flex-row gap-8 items-start">
+      <!-- Photo -->
+      <div class="shrink-0 relative">
+        <div class="w-36 h-44 sm:w-44 sm:h-52 overflow-hidden">
+          <img
+            src="/images/profile.jpg"
+            alt="Leon Porte"
+            class="w-full h-full object-cover object-top grayscale hover:grayscale-0 transition-all duration-700"
+          />
+        </div>
+        <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-accent"></div>
       </div>
-    </div>
-
-    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 animate-fade-up" style="animation-delay: 80ms">
-      Olá, eu sou o <span class="text-primary">Porte</span>
-    </h1>
-
-    <p class="text-lg text-text-muted leading-relaxed max-w-2xl animate-fade-up" style="animation-delay: 160ms">
-      Desenvolvedor de software. Escrevo aqui sobre tecnologia, arquitetura de
-      sistemas e tudo que estou aprendendo no caminho.
-    </p>
-
-    <div class="flex items-center gap-4 mt-6 animate-fade-up" style="animation-delay: 240ms">
-      <a
-        href="/posts"
-        class="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5"
-      >
-        Ver todos os posts
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m9 18 6-6-6-6"/>
-        </svg>
-      </a>
-      <a
-        href="/rss.xml"
-        target="_blank"
-        class="inline-flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors duration-300"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 11a9 9 0 0 1 9 9" />
-          <path d="M4 4a16 16 0 0 1 16 16" />
-          <circle cx="5" cy="19" r="1" />
-        </svg>
-        RSS Feed
-      </a>
+      <!-- Text -->
+      <div class="max-w-xl">
+        <p class="font-serif text-xl sm:text-2xl leading-relaxed text-primary mb-4">
+          Dizem que só domina o conhecimento aquele que é capaz de transmiti-lo.
+        </p>
+        <p class="text-text-muted leading-relaxed text-[0.95rem]">
+          Este blog é o meu <em class="text-accent not-italic font-semibold">laboratório de autoafirmação intelectual</em>.
+          Aqui, transformo 6 anos de mercado e desafios reais em .NET e
+          frameworks modernos (Vue, Angular, React) em artigos práticos. É o
+          registro da minha evolução técnica, onde cada post é um passo para
+          consolidar o que sei e explorar o que ainda não descobri.
+        </p>
+      </div>
     </div>
   </section>
 
-  <section>
-    <div class="flex items-center gap-3 mb-4 animate-fade-up" style="animation-delay: 320ms">
-      <h2 class="text-xl font-bold">Posts recentes</h2>
-      <div class="h-px flex-1 bg-gradient-to-r from-border to-transparent"></div>
-    </div>
+  <!-- Featured post -->
+  {featured && (
+    <section class="mb-2">
+      <PostCard
+        title={featured.data.title}
+        description={featured.data.description}
+        pubDate={featured.data.pubDate}
+        slug={featured.id}
+        tags={featured.data.tags}
+        featured={true}
+      />
+    </section>
+  )}
 
-    <div class="stagger-children">
-      {posts.length > 0 ? (
-        posts.map((post) => (
+  <!-- Rest of posts -->
+  {rest.length > 0 && (
+    <section>
+      <div class="rule-top pt-5 mb-2">
+        <p class="text-xs uppercase tracking-[0.2em] text-text-light font-semibold">
+          Mais artigos
+        </p>
+      </div>
+      <div class="stagger">
+        {rest.map((post, i) => (
           <PostCard
             title={post.data.title}
             description={post.data.description}
             pubDate={post.data.pubDate}
             slug={post.id}
             tags={post.data.tags}
+            index={i + 2}
           />
-        ))
-      ) : (
-        <p class="py-12 text-text-muted text-center animate-fade-in">
-          Nenhum post publicado ainda. Em breve!
-        </p>
-      )}
-    </div>
-  </section>
+        ))}
+      </div>
+    </section>
+  )}
 </BaseLayout>

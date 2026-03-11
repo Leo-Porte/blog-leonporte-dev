@@ -8,31 +8,32 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
 ---
 
 <BaseLayout
-  title="Todos os Posts"
+  title="Arquivo"
   description="Todos os artigos publicados no blog sobre tecnologia e desenvolvimento."
 >
   <section>
-    <div class="mb-8 animate-fade-up">
-      <h1 class="text-3xl font-extrabold tracking-tight mb-2">Todos os Posts</h1>
-      <p class="text-text-muted">
+    <div class="rule-accent pt-5 mb-8 animate-fade-up">
+      <h1 class="font-serif text-4xl font-black tracking-tight mb-2">Arquivo</h1>
+      <p class="text-sm text-text-muted">
         {posts.length} {posts.length === 1 ? 'artigo publicado' : 'artigos publicados'}
       </p>
     </div>
 
-    <div class="stagger-children">
+    <div class="stagger">
       {posts.length > 0 ? (
-        posts.map((post) => (
+        posts.map((post, i) => (
           <PostCard
             title={post.data.title}
             description={post.data.description}
             pubDate={post.data.pubDate}
             slug={post.id}
             tags={post.data.tags}
+            index={i + 1}
           />
         ))
       ) : (
-        <p class="py-12 text-text-muted text-center animate-fade-in">
-          Nenhum post publicado ainda. Em breve!
+        <p class="py-12 text-text-muted text-center font-serif italic animate-fade-in">
+          Nenhum artigo publicado ainda.
         </p>
       )}
     </div>
