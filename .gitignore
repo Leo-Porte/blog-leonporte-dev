@@ -11,6 +11,9 @@ node_modules/
 .env
 .env.*
 
+# claude
+.claude/
+
 # editor
 .vscode/
 .idea/
